@@ -127,12 +127,30 @@ replace方法的第二个参数还可以是一个函数，将每一个匹配内�
 
 ### 函数
 
+- this 总是返回一个对象，简单说，就是返回属性或方法“当前”所在的对象。
 - 函数执行时所在的作用域，是定义时的作用域，而不是调用时所在的作用域。
 - 函数的length属性与实际传入的参数个数无关，只反映函数预期传入的参数个数。
-- arguments很像数组，但它是一个对象。数组专有的方法（比如slice和forEach），不能在arguments对象上直接使用。
-- this总是返回一个对象，简单说，就是返回属性或方法“当前”所在的对象。
 
-#### 1. arguments
+#### 1. this
+
+按照优先顺序来总结一下从函数调用的调用点来判定 this 的规则了。按照这个顺序来问问题，然后在第一个规则适用的地方停下。
+
+1. 函数是通过 new 被调用的吗（==new 绑定==）？如果是，this 就是新构建的对象。==var bar = new foo()==
+
+2. 函数是通过 call 或 apply 被调用（==明确绑定==），甚至是隐藏在 bind 硬绑定 之中吗？如果是，this 就是那个被明确指定的对象。==var bar = foo.call( obj2 )==
+
+3. 函数是通过环境对象（也称为拥有者或容器对象）被调用的吗（==隐含绑定==）？如果是，this 就是那个环境对象。==var bar = obj1.foo()==
+
+4. 否则，使用默认的 this（==默认绑定==）。如果在 strict mode 下，就是 undefined，否则是 global 对象。==var bar = foo()==
+
+以上，就是理解对于普通的函数调用来说的 this 绑定规则 所需的全部。
+
+
+#### 2. 作用域
+
+
+#### 3. arguments
+arguments 很像数组，但它是一个对象。数组专有的方法（比如slice和forEach），不能在arguments对象上直接使用。
 
 非严格模式下，arguments 对象为其内部属性以及函数形式参数创建 getter 和 setter 方法。
 
@@ -141,7 +159,7 @@ replace方法的第二个参数还可以是一个函数，将每一个匹配内�
 ```javascript
 function foo(a, b, c) {
     arguments[0] = 2;
-    a; // 2                                                           
+    a; // 2
 
     b = 4;
     arguments[1]; // 4
@@ -164,10 +182,8 @@ var pair = f(17);
 assert(pair[0] === 42);
 assert(pair[1] === 17);
 ```
-#### 2. 作用域
 
-
-#### 3. ==三剑客：call、applay、bind==
+#### 4. ==三剑客：call、applay、bind==
 
 - call(thisObj[, arg1[, arg2[, ...]]])
   
